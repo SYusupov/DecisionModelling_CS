@@ -83,6 +83,7 @@ def AsymmetricCheck(matrix_np,nodes):
     for i in range(len(matrix_np)):
         if matrix_np[i][i] == 1:
             print(f"Asymmetric? No. Node {nodes[i]} has a relation to itself")
+            return False
     
     print("Asymmetric? Yes.")
     return True
