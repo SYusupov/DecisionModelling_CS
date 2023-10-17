@@ -128,7 +128,7 @@ prob.solve(PULP_CBC_CMD(msg=False))
 print("Status: ",LpStatus[prob.status])
 
 ListVisit2 = calculate_variables(prices, durations, prob)
-print("Different from ListVisit1: ", ListVisit1!=ListVisit2)
+print("Same as ListVisit1: ", ListVisit1==ListVisit2)
 print("\n")
 
 print("------------------Preference 2-----------------")
@@ -355,6 +355,11 @@ print("\n")
 print("-------------------Section 3-------------------")
 
 from scipy.stats import kendalltau, spearmanr
+
+# reversing the order because the higher the ranking the better
+# while for both price and duration, the less the better
+appreciations = {i:j*(-1) for i, j in appreciations.items()} 
+print(appreciations)
 
 kendall = kendalltau(list(durations.values()), list(prices.values())).correlation
 spearman = spearmanr(list(durations.values()), list(prices.values())).correlation
