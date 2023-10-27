@@ -60,3 +60,38 @@ def PluralityRunoff(voting_prefs):
         print(top2_votingPrefs)
         # get the top candidate
         return Plurality(top2_votingPrefs)
+    
+def n(char): return ord(char) - 97
+    
+def Condorrcet(matrix):
+    totalVotes = np.sum(matrix[:,0])
+    half = np.ceil(totalVotes / 2)
+    N = len(matrix[0]) - 1
+    counts = np.zeros((N, N))
+
+    # Sum the votes for each pair
+    for row in matrix:
+        votes = int(row[0])
+        for j in range(1, len(row)-1):
+            for k in range(j+1, len(row)):
+                # print(f'[{row[j]}] [{row[k]}] += {counts[n(row[j])][n(row[k])]}+{votes}')
+                counts[n(row[j])][n(row[k])] += votes
+        # print('..')
+
+    # Generate matrix of wins over each candidate
+    winMatrix = np.where((counts >= half), 1, 0)
+    # Sum along rows, the one with all 1 wins (ignoring diagonal)
+    sum = np.sum(winMatrix, axis=1)
+    winner = -1
+    for i, val in enumerate(sum):
+        if val == N-1: winner = chr(97 + i)
+    
+    if winner == -1: return 'No winner'
+    return winner
+
+if __name__ == '__main__':
+    input = reading_excel('voting_sample.xlsx')
+    print(input)
+    # print(f'Plurality Voting Winner: {Plurality(input)}')
+    # print(f'PluralityRunoff Voting Winner: {PluralityRunoff(input)}')
+    print(f'Condorrcet Voting Winner: {Condorrcet(input)}')
