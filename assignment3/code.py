@@ -60,7 +60,8 @@ def PluralityRunoff(voting_prefs):
         print(top2_votingPrefs)
         # get the top candidate
         return Plurality(top2_votingPrefs)
-    
+
+# convert char to equivalent index e.g. a=0, b=1, c=2 ...
 def n(char): return ord(char) - 97
     
 def Condorrcet(matrix):
@@ -89,9 +90,22 @@ def Condorrcet(matrix):
     if winner == -1: return 'No winner'
     return winner
 
+def BordaVoting(matrix):
+    N = len(matrix[0]) - 1
+    counts = np.zeros(N)
+    for row in matrix:
+        votes = int(row[0])
+        for j in range(1, len(row)):
+            # print(f'[{row[j]}] += {counts[n(row[j])]}+{(n(row[j])+1)}x{votes}')
+            counts[n(row[j])] += (n(row[j])+1) * votes
+    # print(counts)
+    winner = np.argmin(counts)
+    return chr(97 + winner)
+
 if __name__ == '__main__':
     input = reading_excel('voting_sample.xlsx')
     print(input)
-    # print(f'Plurality Voting Winner: {Plurality(input)}')
-    # print(f'PluralityRunoff Voting Winner: {PluralityRunoff(input)}')
+    print(f'Plurality Voting Winner: {Plurality(input)}')
+    print(f'PluralityRunoff Voting Winner: {PluralityRunoff(input)}')
     print(f'Condorrcet Voting Winner: {Condorrcet(input)}')
+    print(f'BordaVoting Voting Winner: {BordaVoting(input)}')
