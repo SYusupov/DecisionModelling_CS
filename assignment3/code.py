@@ -1,6 +1,11 @@
 import pandas as pd
 import numpy as np
 
+## ToDo:
+## 1. SimpleMajorityRulefor2
+## 2. Manage ties for the functions, mention how you do it in the comments
+## 3. Confirm with several examples that functions work correctly
+
 def reading_excel(input):
     """
     read the votes info which is in excel
@@ -21,26 +26,29 @@ def Plurality(voting_prefs):
 
     # calculate sum of the highest preference for each preference
     for pref in voting_prefs:
+        cur_n_votes = int(pref[0])
         if pref[1] not in majority_sum:
-            majority_sum[pref[1]] = pref[0]
+            majority_sum[pref[1]] = cur_n_votes
         else:
-            majority_sum[pref[1]] += pref[0]
+            majority_sum[pref[1]] += cur_n_votes
     
     winner = max(majority_sum, key=majority_sum.get)
     return winner
 
 def PluralityRunoff(voting_prefs):
+    voting_prefs_copy = voting_prefs.copy()
     majority_sum = {}
     n_votes = 0
 
     # calculate sum of the highest preference for each preference
-    for pref in voting_prefs:
-        n_votes += pref[0]
+    for pref in voting_prefs_copy:
+        cur_n_votes = int(pref[0])
+        n_votes += cur_n_votes
 
         if pref[1] not in majority_sum:
-            majority_sum[pref[1]] = pref[0]
+            majority_sum[pref[1]] = cur_n_votes
         else:
-            majority_sum[pref[1]] += pref[0]
+            majority_sum[pref[1]] += cur_n_votes
 
     # get top2 candidates
     sorted_majority = sorted(majority_sum.items(), key=lambda x: x[1], reverse=True)
@@ -51,13 +59,12 @@ def PluralityRunoff(voting_prefs):
     else:
         ## creating a new array with only the top 2 candidates
         # leaving only top 2 places in the array
-        top2_votingPrefs = voting_prefs[:, :3]
+        top2_votingPrefs = voting_prefs_copy[:, :3]
         # checking if the top2 candidates are in a cell
-        mask = np.isin(voting_prefs, top2)
+        mask = np.isin(voting_prefs_copy, top2)
         # replacing with the top2
-        n_prefs = voting_prefs.shape[0]
-        top2_votingPrefs[:,1:] = voting_prefs[mask].reshape(n_prefs, 2)
-        print(top2_votingPrefs)
+        n_prefs = voting_prefs_copy.shape[0]
+        top2_votingPrefs[:,1:] = voting_prefs_copy[mask].reshape(n_prefs, 2)
         # get the top candidate
         return Plurality(top2_votingPrefs)
 
@@ -65,7 +72,8 @@ def PluralityRunoff(voting_prefs):
 def n(char): return ord(char) - 97
     
 def Condorrcet(matrix):
-    totalVotes = np.sum(matrix[:,0])
+    n_votes_col = matrix[:,0].astype(int)
+    totalVotes = np.sum(n_votes_col)
     half = np.ceil(totalVotes / 2)
     N = len(matrix[0]) - 1
     counts = np.zeros((N, N))
@@ -102,6 +110,44 @@ def BordaVoting(matrix):
     winner = np.argmin(counts)
     return chr(97 + winner)
 
+def generate_PrefSet(n_votes=40, n_candidates = 6):
+    """Randomly generating preferences set based on the given number of votes,
+    number of candidates, and the 4 conditions"""
+    candidates =  list(string.ascii_lowercase)[:n_candidates]
+
+    n_top_candidates = {x:0 for x in candidates} # to record top for condition 4
+
+    voting_prefs = np.empty((0, len(candidates)+1)) # matrix to store prefs
+    sum_votes = 0 # n of total votes already made by created preferences
+
+    # for condition 1
+    max_pref_vote = math.floor(0.9*n_votes)
+    # for condition 2
+    max_top_candidate = math.floor(0.7*n_votes)
+
+    while sum_votes < n_votes:
+        # generate a new random preference
+        satisfy = False
+        while satisfy == False:
+            # randomly generate the preference order
+            pref = random.sample(candidates, len(candidates))
+            # randomly select the number of votes, smaller than max
+            n_pref_votes = random.randint(1,max_top_candidate)
+
+            # check if the first pref candidate has less than allowed (condition 4)
+            if n_top_candidates[pref[0]] + n_pref_votes < max_top_candidate:
+                satisfy = True
+                n_top_candidates[pref[0]] += n_pref_votes
+                voting_prefs = np.vstack((voting_prefs, [n_pref_votes]+pref))
+                sum_votes += n_pref_votes
+
+    # reducing the last pref's n so that total equals n_votes
+    if sum_votes > n_votes:
+        sum_b4_last = sum([int(i) for i in voting_prefs[:-1,0]])
+        n_last = n_votes - sum_b4_last
+        voting_prefs[-1,0] = str(n_last)
+    return voting_prefs
+
 if __name__ == '__main__':
     input = reading_excel('voting_sample.xlsx')
     print(input)
@@ -109,3 +155,33 @@ if __name__ == '__main__':
     print(f'PluralityRunoff Voting Winner: {PluralityRunoff(input)}')
     print(f'Condorrcet Voting Winner: {Condorrcet(input)}')
     print(f'BordaVoting Voting Winner: {BordaVoting(input)}')
+
+    ## Question 6
+    # Generate until you get the same result for all voting rules
+    satisfy = False
+    while satisfy == False:
+        voting_prefs = generate_PrefSet()
+        
+        condorrcet_out = Condorrcet(voting_prefs)
+        borda_out = BordaVoting(voting_prefs)
+        plural_out = Plurality(voting_prefs)
+        pluralrun_out = PluralityRunoff(voting_prefs)
+
+        if condorrcet_out == borda_out == plural_out == pluralrun_out:
+            satisfy = True
+    print('Q6 preferences:\n',voting_prefs)
+
+    ## Question 7
+    # Generate until you get different results for all voting rules
+    satisfy = False
+    while satisfy == False:
+        voting_prefs = generate_PrefSet()
+        
+        condorrcet_out = Condorrcet(voting_prefs)
+        borda_out = BordaVoting(voting_prefs)
+        plural_out = Plurality(voting_prefs)
+        pluralrun_out = PluralityRunoff(voting_prefs)
+
+        if condorrcet_out != borda_out != plural_out != pluralrun_out:
+            satisfy = True
+    print('Q7 preferences:\n',voting_prefs)
