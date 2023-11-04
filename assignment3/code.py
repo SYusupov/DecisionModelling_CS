@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import string
+import math
+import random
 
 ## ToDo:
 ## 1. SimpleMajorityRulefor2
@@ -98,14 +101,16 @@ def Condorrcet(matrix):
     if winner == -1: return 'No winner'
     return winner
 
+# The function use  a dictionary counts to keep track of counting factor * by votes for each candidate
+# and choose the min count as the Borda winner
 def BordaVoting(matrix):
     N = len(matrix[0]) - 1
     counts = np.zeros(N)
     for row in matrix:
         votes = int(row[0])
         for j in range(1, len(row)):
-            # print(f'[{row[j]}] += {counts[n(row[j])]}+{(n(row[j])+1)}x{votes}')
-            counts[n(row[j])] += (n(row[j])+1) * votes
+            # print(f'[{row[j]}] += {counts[n(row[j])]}+{j}x{votes}')
+            counts[n(row[j])] += j * votes
     # print(counts)
     winner = np.argmin(counts)
     return chr(97 + winner)
