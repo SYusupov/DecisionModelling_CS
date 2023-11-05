@@ -4,11 +4,6 @@ import string
 import math
 import random
 
-## ToDo:
-## 1. SimpleMajorityRulefor2
-## 2. Manage ties for the functions, mention how you do it in the comments
-## 3. Confirm with several examples that functions work correctly
-
 def reading_excel(input):
     """
     read the votes info which is in excel
@@ -24,7 +19,7 @@ def reading_excel(input):
 
     return matrix_np 
 
-# For ties, First Come First Serve policy is being use
+# For ties, First Come First Serve policy is being used
 def SimpleMajorityRulefor2(voting_prefs):
     a = int(voting_prefs[0][0])
     b = int(voting_prefs[1][0])
