@@ -201,6 +201,10 @@ if __name__ == '__main__':
         plural_out = Plurality(voting_prefs)
         pluralrun_out = PluralityRunoff(voting_prefs)
 
-        if condorrcet_out != borda_out != plural_out != pluralrun_out:
+        if (
+            condorrcet_out != borda_out and condorrcet_out != plural_out
+            and condorrcet_out != pluralrun_out and borda_out != plural_out
+            and borda_out != pluralrun_out and plural_out != pluralrun_out
+        ):
             satisfy = True
     print('Q7 preferences:\n',voting_prefs)
