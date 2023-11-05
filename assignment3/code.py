@@ -24,6 +24,15 @@ def reading_excel(input):
 
     return matrix_np 
 
+# For ties, First Come First Serve policy is being use
+def SimpleMajorityRulefor2(voting_prefs):
+    a = int(voting_prefs[0][0])
+    b = int(voting_prefs[1][0])
+    # In case of ties a == b return a (the first candidate)
+    if a >= b: return voting_prefs[0][1]
+    else: return voting_prefs[1][1]
+
+
 def Plurality(voting_prefs):
     majority_sum = {}
 
@@ -74,6 +83,7 @@ def PluralityRunoff(voting_prefs):
 # convert char to equivalent index e.g. a=0, b=1, c=2 ...
 def n(char): return ord(char) - 97
     
+# The ties are again handeld on First Come First Serve basis
 def Condorrcet(matrix):
     n_votes_col = matrix[:,0].astype(int)
     totalVotes = np.sum(n_votes_col)
@@ -154,6 +164,10 @@ def generate_PrefSet(n_votes=40, n_candidates = 6):
     return voting_prefs
 
 if __name__ == '__main__':
+    input = [['10', 'a'], ['11', 'b']]
+    print('Input for SimpleMajority: ')
+    print(input)
+    print(f'Simple Majority Voting Winner: {SimpleMajorityRulefor2(input)}')
     input = reading_excel('voting_sample.xlsx')
     print(input)
     print(f'Plurality Voting Winner: {Plurality(input)}')
