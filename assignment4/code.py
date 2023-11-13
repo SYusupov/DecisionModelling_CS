@@ -1,4 +1,15 @@
 import math
+import pandas as pd
+
+def get_data(file):
+    """
+    Obtains a critiques dictionary from the data csv file
+    """
+    df = pd.read_csv(file)
+    critiques = df.set_index('Unnamed: 0').transpose().to_dict(orient='dict')
+    movie_list = list(df.columns[1:])
+    filtered_critiques = {person: {movie: value for movie, value in values.items() if value != 0.0} for person, values in critiques.items()}
+    return movie_list, filtered_critiques
 
 def sim_distanceManhattan(person1, person2):
     """
@@ -17,10 +28,8 @@ def sim_distanceEuclidienne(person1, person2):
     euclidienne_dist = 0
     for movie, rating in person1.items():
         if movie in person2.keys():
-            # print("m1m2", person1[movie], person2[movie])
-            euclidienne_dist += (person1[movie] - person2[movie]) ** 2
-            # print("ed", euclidienne_dist)
-    return math.sqrt(euclidienne_dist)
+            euclidienne_dist += math.sqrt((person1[movie] - person2[movie]) ** 2)
+    return euclidienne_dist
 
 def sim_distancePearson(person1, person2):
     """
@@ -151,20 +160,21 @@ print('----------------------------------------------------')
 print('Example 1:------------------------------------------')
 print('----------------------------------------------------')
 
-movie_list1 = ["Lady", "Snake", "Luck", "Superman", "Dupree", "Night"]
-critiques1 = {"Lisa Rose": {'Lady': 2.5, 'Snake': 3.5, 'Luck': 3.0, 'Superman': 3.5, 'Dupree': 2.5, 'Night': 3.0},
-              "Gene Seymour": {'Lady': 3.0, 'Snake': 3.5, 'Luck': 1.5, 'Superman': 5.0, 'Dupree': 3.5,
-                               'Night': 3.0},
-              "Michael Phillips": {'Lady': 2.5, 'Snake': 3.0, 'Superman': 3.5, 'Night': 4.0},
-              "Claudia Puig": {'Snake': 3.5, 'Luck': 3.0, 'Superman': 4.0, 'Dupree': 2.5, 'Night': 4.5},
-              "Mick Lasalle": {'Lady': 3.0, 'Snake': 4.0, 'Luck': 2.0, 'Superman': 3.0, 'Dupree': 2.0,
-                               'Night': 3.0},
-              "Jack Matthews": {'Lady': 3.0, 'Snake': 4.0, 'Superman': 5.0, 'Dupree': 3.5, 'Night': 3.0},
-              "Toby": {'Snake': 4.5, 'Superman': 4.0, 'Dupree': 1.0},
-              "Anne": {'Lady': 1.5, 'Luck': 4.0, 'Dupree': 2.0}
-              }
+# movie_list1 = ["Lady", "Snakes", "Luck", "Superman", "Dupree", "Night"]
+# critiques1 = {"Lisa Rose": {'Lady': 2.5, 'Snakes': 3.5, 'Luck': 3.0, 'Superman': 3.5, 'Dupree': 2.5, 'Night': 3.0},
+#               "Gene Seymour": {'Lady': 3.0, 'Snakes': 3.5, 'Luck': 1.5, 'Superman': 5.0, 'Dupree': 3.5,
+#                                'Night': 3.0},
+#               "Michael Phillips": {'Lady': 2.5, 'Snakes': 3.0, 'Superman': 3.5, 'Night': 4.0},
+#               "Claudia Puig": {'Snakes': 3.5, 'Luck': 3.0, 'Superman': 4.0, 'Dupree': 2.5, 'Night': 4.5},
+#               "Mick Lasalle": {'Lady': 3.0, 'Snakes': 4.0, 'Luck': 2.0, 'Superman': 3.0, 'Dupree': 2.0,
+#                                'Night': 3.0},
+#               "Jack Matthews": {'Lady': 3.0, 'Snakes': 4.0, 'Superman': 5.0, 'Dupree': 3.5, 'Night': 3.0},
+#               "Toby": {'Snakes': 4.5, 'Superman': 4.0, 'Dupree': 1.0},
+#               "Anne": {'Lady': 1.5, 'Luck': 4.0, 'Dupree': 2.0}
+#               }
 
-print("Eucleadian between Lisa and Gene: ", sim_distanceEuclidienne(critiques1["Lisa Rose"], critiques1["Gene Seymour"]))
+file1 = 'data1.csv'
+movie_list1, critiques1 = get_data(file1)
 
 print("Movie recommended for Anne with Manhattan similarity distance: " + str(
     Bestrecommend("Anne", critiques1, movie_list1, "manhattan")) + "\n")
@@ -175,29 +185,33 @@ print("Movie recommended for Anne with Pearson similarity distance: " + str(
 print("Movie recommended for Anne with Cosine similarity distance: " + str(
     Bestrecommend("Anne", critiques1, movie_list1, "cosine")) + "\n")
 
-movie_list2 = ["Blues Traveler", "Broken Bells", "Deadmau5", "Norah Jones", "Phoenix", "Slightly Stoopid",
-               "The Strokes", "Vampire Weekend"]
-critiques2 = {"Angelica": {"Blues Traveler": 3.5, "Broken Bells": 2.0, "Norah Jones": 4.5, "Phoenix": 5.0,
-                           "Slightly Stoopid": 1.5, "The Strokes": 2.5, "Vampire Weekend": 2.0},
-              "Bill": {"Blues Traveler": 2.0, "Broken Bells": 3.5, "Deadmau5": 4.0, "Phoenix": 2.0,
-                       "Slightly Stoopid": 3.5, "Vampire Weekend": 3.0},
-              "Chan": {"Blues Traveler": 5.0, "Broken Bells": 1.0, "Deadmau5": 1.0, "Norah Jones": 3.0,
-                       "Phoenix": 5.0, "Slightly Stoopid": 1.0},
-              "Dan": {"Blues Traveler": 3.0, "Broken Bells": 4.0, "Deadmau5": 4.5, "Phoenix": 3.0,
-                      "Slightly Stoopid": 4.5, "The Strokes": 4.0, "Vampire Weekend": 2.0},
-              "Hailey": {"Broken Bells": 4.0, "Deadmau5": 1.0, "Norah Jones": 4.0, "The Strokes": 4.0,
-                         "Vampire Weekend": 1.0},
-              "Jordyn": {"Broken Bells": 4.5, "Deadmau5": 4.0, "Norah Jones": 5.0, "Phoenix": 5.0,
-                         "Slightly Stoopid": 4.5, "The Strokes": 4.0, "Vampire Weekend": 4.0},
-              "Sam": {"Blues Traveler": 5.0, "Broken Bells": 2.0, "Norah Jones": 3.0, "Phoenix": 5.0,
-                      "Slightly Stoopid": 4.0, "The Strokes": 5.0},
-              "Veronica": {"Blues Traveler": 3.0, "Norah Jones": 5.0, "Phoenix": 4.0, "Slightly Stoopid": 2.5,
-                           "The Strokes": 3.0}
-              }
 
 print('----------------------------------------------------')
 print('Example 2:------------------------------------------')
 print('----------------------------------------------------')
+
+# movie_list2 = ["Blues Traveler", "Broken Bells", "Deadmau5", "Norah Jones", "Phoenix", "Slightly Stoopid",
+#                "The Strokes", "Vampire Weekend"]
+# critiques2 = {"Angelica": {"Blues Traveler": 3.5, "Broken Bells": 2.0, "Norah Jones": 4.5, "Phoenix": 5.0,
+#                            "Slightly Stoopid": 1.5, "The Strokes": 2.5, "Vampire Weekend": 2.0},
+#               "Bill": {"Blues Traveler": 2.0, "Broken Bells": 3.5, "Deadmau5": 4.0, "Phoenix": 2.0,
+#                        "Slightly Stoopid": 3.5, "Vampire Weekend": 3.0},
+#               "Chan": {"Blues Traveler": 5.0, "Broken Bells": 1.0, "Deadmau5": 1.0, "Norah Jones": 3.0,
+#                        "Phoenix": 5.0, "Slightly Stoopid": 1.0},
+#               "Dan": {"Blues Traveler": 3.0, "Broken Bells": 4.0, "Deadmau5": 4.5, "Phoenix": 3.0,
+#                       "Slightly Stoopid": 4.5, "The Strokes": 4.0, "Vampire Weekend": 2.0},
+#               "Hailey": {"Broken Bells": 4.0, "Deadmau5": 1.0, "Norah Jones": 4.0, "The Strokes": 4.0,
+#                          "Vampire Weekend": 1.0},
+#               "Jordyn": {"Broken Bells": 4.5, "Deadmau5": 4.0, "Norah Jones": 5.0, "Phoenix": 5.0,
+#                          "Slightly Stoopid": 4.5, "The Strokes": 4.0, "Vampire Weekend": 4.0},
+#               "Sam": {"Blues Traveler": 5.0, "Broken Bells": 2.0, "Norah Jones": 3.0, "Phoenix": 5.0,
+#                       "Slightly Stoopid": 4.0, "The Strokes": 5.0},
+#               "Veronica": {"Blues Traveler": 3.0, "Norah Jones": 5.0, "Phoenix": 4.0, "Slightly Stoopid": 2.5,
+#                            "The Strokes": 3.0}
+#               }
+
+file2 = 'data2.csv'
+movie_list2, critiques2 = get_data(file2)
 
 print('\nFor Veronica:---------------------------------------')
 print("Movie recommended for Veronica with Manhattan similarity distance: " + str(
