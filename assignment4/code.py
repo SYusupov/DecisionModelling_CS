@@ -5,8 +5,9 @@ def get_data(file):
     """
     Obtains a critiques dictionary from the data csv file
     """
-    df = pd.read_csv(file)
-    critiques = df.set_index('Unnamed: 0').transpose().to_dict(orient='dict')
+    df = pd.read_excel(file)
+    print(df)
+    critiques = df.set_index('name').transpose().to_dict(orient='dict')
     movie_list = list(df.columns[1:])
     filtered_critiques = {person: {movie: value for movie, value in values.items() if value != 0.0} for person, values in critiques.items()}
     return movie_list, filtered_critiques
@@ -173,7 +174,7 @@ print('----------------------------------------------------')
 #               "Anne": {'Lady': 1.5, 'Luck': 4.0, 'Dupree': 2.0}
 #               }
 
-file1 = 'data1.csv'
+file1 = 'data1.xlsx'
 movie_list1, critiques1 = get_data(file1)
 
 print("Movie recommended for Anne with Manhattan similarity distance: " + str(
@@ -210,7 +211,7 @@ print('----------------------------------------------------')
 #                            "The Strokes": 3.0}
 #               }
 
-file2 = 'data2.csv'
+file2 = 'data2.xlsx'
 movie_list2, critiques2 = get_data(file2)
 
 print('\nFor Veronica:---------------------------------------')
