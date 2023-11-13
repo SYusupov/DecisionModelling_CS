@@ -17,8 +17,10 @@ def sim_distanceEuclidienne(person1, person2):
     euclidienne_dist = 0
     for movie, rating in person1.items():
         if movie in person2.keys():
-            euclidienne_dist += math.sqrt((person1[movie] - person2[movie]) ** 2)
-    return euclidienne_dist
+            # print("m1m2", person1[movie], person2[movie])
+            euclidienne_dist += (person1[movie] - person2[movie]) ** 2
+            # print("ed", euclidienne_dist)
+    return math.sqrt(euclidienne_dist)
 
 def sim_distancePearson(person1, person2):
     """
@@ -161,6 +163,8 @@ critiques1 = {"Lisa Rose": {'Lady': 2.5, 'Snake': 3.5, 'Luck': 3.0, 'Superman': 
               "Toby": {'Snake': 4.5, 'Superman': 4.0, 'Dupree': 1.0},
               "Anne": {'Lady': 1.5, 'Luck': 4.0, 'Dupree': 2.0}
               }
+
+print("Eucleadian between Lisa and Gene: ", sim_distanceEuclidienne(critiques1["Lisa Rose"], critiques1["Gene Seymour"]))
 
 print("Movie recommended for Anne with Manhattan similarity distance: " + str(
     Bestrecommend("Anne", critiques1, movie_list1, "manhattan")) + "\n")
