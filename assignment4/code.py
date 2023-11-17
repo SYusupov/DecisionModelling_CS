@@ -77,8 +77,8 @@ def sim_distanceEuclidienne(person1, person2):
     euclidienne_dist = 0
     for movie, rating in person1.items():
         if movie in person2.keys():
-            euclidienne_dist += math.sqrt((person1[movie] - person2[movie]) ** 2)
-    return euclidienne_dist
+            euclidienne_dist += (person1[movie] - person2[movie]) ** 2
+    return math.sqrt(euclidienne_dist)
 
 def sim_distanceMinkowski(person1, person2):
     """
@@ -246,6 +246,8 @@ print('----------------------------------------------------')
 
 file1 = 'data1.xlsx'
 movie_list1, critiques1 = get_data(file1)
+
+print("Eucleadian between Lisa and Gene: ", sim_distanceEuclidienne(critiques1["Lisa Rose"], critiques1["Gene Seymour"]))
 
 print("Movie recommended for Anne with Manhattan similarity distance: " + str(
     Bestrecommend("Anne", critiques1, movie_list1, "manhattan")) + "\n")
