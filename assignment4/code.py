@@ -11,6 +11,27 @@ def get_data(file):
     filtered_critiques = {person: {movie: value for movie, value in values.items() if value != 0.0} for person, values in critiques.items()}
     return movie_list, filtered_critiques
 
+def check_missing_data_percentage(movies, critiques):
+    """
+    Checks for missing data percentage in the critiques' evaluation matrix
+    """
+    total_cells = len(critiques) * len(movies)
+    missing_cells = 0
+
+    for person in critiques:
+        for movie in movies:
+            if movie not in critiques[person]:
+                missing_cells += 1
+
+    missing_percentage = round((missing_cells / total_cells) * 100, 2)
+
+    print(f'Total cells in the matrix: {total_cells}, while missing cells in the matrix: {missing_cells}.')
+    print(f'Thus, missing cells percentage for the matrix is: {missing_percentage}%')
+
+    if 30 <= missing_percentage <= 50:
+        return True
+    return False
+
 def sim_distanceManhattan(person1, person2):
     """
     Measures Manhattan distance between different persons' choices
