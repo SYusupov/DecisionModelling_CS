@@ -26,10 +26,38 @@ def check_missing_data_percentage(movies, critiques):
     missing_percentage = round((missing_cells / total_cells) * 100, 2)
 
     print(f'Total cells in the matrix: {total_cells}, while missing cells in the matrix: {missing_cells}.')
-    print(f'Thus, missing cells percentage for the matrix is: {missing_percentage}%')
+    print(f'Thus, missing cells percentage for the matrix is: {missing_percentage}%.')
 
     if 30 <= missing_percentage <= 50:
+        print(f'Thus, missing cells percentage condition for the given matrix satisfies.\n')
         return True
+
+    print(f'So, missing cells percentage condition for the given matrix is not satisfied.\n')
+    return False
+
+def check_chosen_critique(name, movies, critiques):
+    """
+    Checks for chosen critique, to see if hasn't seen atleast half of the movies
+    """
+    n_movies = len(movies)
+    count = 0
+
+    person = critiques[name]
+
+    for movie in movies:
+        if movie not in person.keys():
+            count += 1
+
+    unseen_percentage = round((count / n_movies) * 100, 2)
+
+    print(f'Total movies: {n_movies}, while {name} has watched: {n_movies - count}.')
+    print(f'Thus, percentage of unseen movies for the {name} is: {unseen_percentage}%.')
+
+    if unseen_percentage >= 50:
+        print(f'Thus, unseen movies percentage condition satisifies for {name} and the given matrix.\n')
+        return True
+
+    print(f'So, unseen movies percentage condition is not satisified for {name} and the given matrix.\n')
     return False
 
 def sim_distanceManhattan(person1, person2):
@@ -83,12 +111,18 @@ def sim_distancePearson(person1, person2):
             sum_y += y
             sum_x2 += x ** 2
             sum_y2 += y ** 2
-    denominator = math.sqrt(sum_x2 - (sum_x ** 2) / n) * math.sqrt(sum_y2 - (sum_y ** 2) / n)
+
+    # Handling no common movies situation
+    if n == 0:
+        return 0 
+
+    numerator = sum_xy - (sum_x * sum_y) / n
+    denominator = math.sqrt((sum_x2 - (sum_x ** 2) / n) * (sum_y2 - (sum_y ** 2) / n))
+    
     if denominator == 0:
         return 0
     else:
-        return (sum_xy - (sum_x * sum_y) / n) / denominator
-
+        return numerator / denominator
 
 def sim_distanceCosine(person1, person2):
     """
@@ -275,3 +309,21 @@ print("Movie recommended for Hailey with Pearson similarity distance: " + str(
     Bestrecommend("Hailey", critiques2, movie_list2, "pearson")) + "\n")
 print("Movie recommended for Hailey with Cosine similarity distance: " + str(
     Bestrecommend("Hailey", critiques2, movie_list2, "cosine")) + "\n")
+
+print('Question4:-----------------------------------------------')
+file3 = 'q4_data.xlsx'
+movie_list3, critiques3 = get_data(file3)
+check_missing_data_percentage(movie_list3, critiques3)
+check_chosen_critique('C9', movie_list3, critiques3)
+
+print('Critic chosen for recommendation: C9.')
+print("Movie recommended for C9 with Manhattan similarity distance: " + str(
+    Bestrecommend("C9", critiques3, movie_list3, "manhattan")) + "\n")
+print("Movie recommended for C9 with Euclidean similarity distance: " + str(
+    Bestrecommend("C9", critiques3, movie_list3, "euclidean")) + "\n")
+print("Movie recommended for C9 with Minkowski similarity distance: " + str(
+    Bestrecommend("C9", critiques3, movie_list3, "minkowski")) + "\n")
+print("Movie recommended for C9 with Pearson similarity distance: " + str(
+    Bestrecommend("C9", critiques3, movie_list3, "pearson")) + "\n")
+print("Movie recommended for C9 with Cosine similarity distance: " + str(
+    Bestrecommend("C9", critiques3, movie_list3, "cosine")) + "\n")
