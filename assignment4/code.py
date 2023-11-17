@@ -6,7 +6,6 @@ def get_data(file):
     Obtains a critiques dictionary from the data csv file
     """
     df = pd.read_excel(file)
-    print(df)
     critiques = df.set_index('name').transpose().to_dict(orient='dict')
     movie_list = list(df.columns[1:])
     filtered_critiques = {person: {movie: value for movie, value in values.items() if value != 0.0} for person, values in critiques.items()}
@@ -31,6 +30,17 @@ def sim_distanceEuclidienne(person1, person2):
         if movie in person2.keys():
             euclidienne_dist += math.sqrt((person1[movie] - person2[movie]) ** 2)
     return euclidienne_dist
+
+def sim_distanceMinkowski(person1, person2):
+    """
+    Measures Minkowski distance between different persons' choices
+    """
+    p = 3
+    minkowski_dist = 0
+    for movie, rating in person1.items():
+        if movie in person2.keys():
+            minkowski_dist += math.pow(abs(person1[movie] - person2[movie]) ** p, (1/p))
+    return minkowski_dist
 
 def sim_distancePearson(person1, person2):
     """
@@ -138,6 +148,11 @@ def Bestrecommend(nouveauCritique, Critiques, movie_list, similarity_function):
                 distanceOfCritique = sim_distanceEuclidienne(Critiques[nouveauCritique], Critiques[critique])
                 s += (1 / (1 + distanceOfCritique))
                 total += (nouveauMovieRating / (1 + distanceOfCritique))
+
+            elif similarity_function == "minkowski":
+                distanceOfCritique = sim_distanceMinkowski(Critiques[nouveauCritique], Critiques[critique])
+                s += (1 / (1 + distanceOfCritique))
+                total += (nouveauMovieRating / (1 + distanceOfCritique))
             
             elif similarity_function == "pearson":
                 distanceOfCritique = sim_distancePearson(Critiques[nouveauCritique], Critiques[critique])
@@ -181,6 +196,8 @@ print("Movie recommended for Anne with Manhattan similarity distance: " + str(
     Bestrecommend("Anne", critiques1, movie_list1, "manhattan")) + "\n")
 print("Movie recommended for Anne with Euclidean similarity distance: " + str(
     Bestrecommend("Anne", critiques1, movie_list1, "euclidean")) + "\n")
+print("Movie recommended for Anne with Minkowski similarity distance: " + str(
+    Bestrecommend("Anne", critiques1, movie_list1, "minkowski")) + "\n")
 print("Movie recommended for Anne with Pearson similarity distance: " + str(
     Bestrecommend("Anne", critiques1, movie_list1, "pearson")) + "\n")
 print("Movie recommended for Anne with Cosine similarity distance: " + str(
@@ -219,6 +236,8 @@ print("Movie recommended for Veronica with Manhattan similarity distance: " + st
     Bestrecommend("Veronica", critiques2, movie_list2, "manhattan")) + "\n")
 print("Movie recommended for Veronica with Euclidean similarity distance: " + str(
     Bestrecommend("Veronica", critiques2, movie_list2, "euclidean")) + "\n")
+print("Movie recommended for Veronica with Minkowski similarity distance: " + str(
+    Bestrecommend("Veronica", critiques2, movie_list2, "minkowski")) + "\n")
 print("Movie recommended for Veronica with Pearson similarity distance: " + str(
     Bestrecommend("Veronica", critiques2, movie_list2, "pearson")) + "\n")
 print("Movie recommended for Veronica with Cosine similarity distance: " + str(
@@ -229,6 +248,8 @@ print("Movie recommended for Hailey with Manhattan similarity distance: " + str(
     Bestrecommend("Hailey", critiques2, movie_list2, "manhattan")) + "\n")
 print("Movie recommended for Hailey with Euclidean similarity distance: " + str(
     Bestrecommend("Hailey", critiques2, movie_list2, "euclidean")) + "\n")
+print("Movie recommended for Hailey with Minkowski similarity distance: " + str(
+    Bestrecommend("Hailey", critiques2, movie_list2, "minkowski")) + "\n")
 print("Movie recommended for Hailey with Pearson similarity distance: " + str(
     Bestrecommend("Hailey", critiques2, movie_list2, "pearson")) + "\n")
 print("Movie recommended for Hailey with Cosine similarity distance: " + str(
