@@ -28,14 +28,14 @@ def check_missing_data_percentage(movies, critiques):
 
     missing_percentage = round((missing_cells / total_cells) * 100, 2)
 
-    print(f'Total cells in the matrix: {total_cells}, while missing cells in the matrix: {missing_cells}.')
-    print(f'Thus, missing cells percentage for the matrix is: {missing_percentage}%.')
+    # print(f'Total cells in the matrix: {total_cells}, while missing cells in the matrix: {missing_cells}.')
+    # print(f'Thus, missing cells percentage for the matrix is: {missing_percentage}%.')
 
     if 30 <= missing_percentage <= 50:
-        print(f'Thus, missing cells percentage condition for the given matrix satisfies.\n')
+        # print(f'Thus, missing cells percentage condition for the given matrix satisfies.\n')
         return True
 
-    print(f'So, missing cells percentage condition for the given matrix is not satisfied.\n')
+    # print(f'So, missing cells percentage condition for the given matrix is not satisfied.\n')
     return False
 
 def check_chosen_critique(name, movies, critiques):
@@ -53,14 +53,14 @@ def check_chosen_critique(name, movies, critiques):
 
     unseen_percentage = round((count / n_movies) * 100, 2)
 
-    print(f'Total movies: {n_movies}, while {name} has watched: {n_movies - count}.')
-    print(f'Thus, percentage of unseen movies for the {name} is: {unseen_percentage}%.')
+    # print(f'Total movies: {n_movies}, while {name} has watched: {n_movies - count}.')
+    # print(f'Thus, percentage of unseen movies for the {name} is: {unseen_percentage}%.')
 
     if unseen_percentage >= 50:
-        print(f'Thus, unseen movies percentage condition satisifies for {name} and the given matrix.\n')
+        # print(f'Thus, unseen movies percentage condition satisifies for {name} and the given matrix.\n')
         return True
 
-    print(f'So, unseen movies percentage condition is not satisified for {name} and the given matrix.\n')
+    # print(f'So, unseen movies percentage condition is not satisified for {name} and the given matrix.\n')
     return False
 
 def sim_distanceManhattan(person1, person2):
@@ -356,7 +356,7 @@ print("Movie recommended for Hailey with Cosine similarity distance: " + str(
 print('Question4:-----------------------------------------------')
 file3 = 'q4_data.xlsx'
 movie_list3, critiques3 = get_data(file3)
-print(movie_list3, critiques3)
+# print(movie_list3, critiques3)
 check_missing_data_percentage(movie_list3, critiques3)
 check_chosen_critique('C9', movie_list3, critiques3)
 
@@ -414,8 +414,9 @@ def find_5_diff_results():
 
 # Testing our current result
 file4 = 'q5_data.xlsx'
-movie_list4, critiques4 = get_data(file4)
-# print(movie_list4, critiques4)
+_, critiques4 = get_data(file4)
+movie_list4 = ["M"+str(i) for i in range(15)]
+
 check_missing_data_percentage(movie_list4, critiques4)
 check_chosen_critique('C0', movie_list4, critiques4)
 
