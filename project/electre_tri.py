@@ -29,17 +29,14 @@ def find_optimal_threshold(data, labels):
 
     return optimal_thresholds
 
-def generate_thresholds(df):
+def generate_thresholds(
+        df, columns):
     """Getting Thresholds based on the data
         thresholds - should start from border of the best value 
         and end with the worst one, sorted"""
     # 'Energy', 'Sugars',
     #    'Saturated_fatty_acids', 'Salt', 'Proteins', 'Fiber', 'Fruit_vegetable',
     #    'Nutriscore', 'nutriscore_grade'
-    # columns = ['energy_100g', 'saturated-fat_100g', 'sugars_100g', 'fiber_100g',
-    #        'proteins_100g', 'salt_100g', 'fruits-vegetables-nuts_100g']
-    columns = ['Energy', 'Saturated_fatty_acids', 'Sugars', 'Fiber',
-           'Proteins', 'Salt', 'Fruit_vegetable']
     labels = df['nutriscore_grade']
 
     thresholds = {}
@@ -55,34 +52,38 @@ def generate_thresholds(df):
         value = [round(v, 2) for v in value]
         thresholds[key] = list(value)
 
-    thresholds["Energy"].sort()
-    thresholds["Saturated_fatty_acids"].sort()
-    thresholds["Sugars"].sort()
-    thresholds["Salt"].sort()
-    thresholds["Fiber"].sort(reverse=True)
-    thresholds["Proteins"].sort(reverse=True)
-    thresholds["Fruit_vegetable"].sort(reverse=True)
+    negative_crits = ['energy','saturated_fat','sugar','salt']
+    positive_crits = ['fiber','protein','fruit']
+
+    for column in columns:
+        if any(s in column for s in negative_crits):
+            thresholds[column].sort()
+        elif any(s in column for s in positive_crits):
+            thresholds[column].sort(reverse=True)
 
     return thresholds
 
-def PessimisticmajoritySorting(df, lmd, debug=False, weights=None):
+def PessimisticmajoritySorting(df, lmd, columns = ['energy_100g', 'saturated-fat_100g', 'sugars_100g', 'fiber_100g',
+            'proteins_100g', 'salt_100g', 'fruits-vegetables-nuts_100g'], results_col_1 = 'pessim_electre_lmd=',
+            debug=False, weights=None):
     """
     lmd - proportion of weights that a datapoint should be pass to go over the border
+    results_col_1 - the name of the column to save the results to
     """
-    results_col = f'pessim_electre_lmd={lmd}'
+    results_col = f'{results_col_1}{lmd}'
     df[results_col] = ''
     classes = ['a', 'b', 'c', 'd', 'e']
     
     if weights == None:
-        # weights = {
-        #     "energy_100g":1, "sugars_100g":1, "saturated-fat_100g":1, "salt_100g": 1, 
-        #     "proteins_100g":2, "fiber_100g": 2, "fruits-vegetables-nuts_100g":2}
         weights = {
-            "Energy":1, "Sugars":1, "Saturated_fatty_acids":1, "Salt": 1, 
-            "Proteins":2, "Fiber": 2, "Fruit_vegetable":2}
+            "energy_100g":1, "sugars_100g":1, "saturated-fat_100g":1, "salt_100g": 1, 
+            "proteins_100g":2, "fiber_100g": 2, "fruits-vegetables-nuts_100g":2}
+        # weights = {
+        #     "Energy":1, "Sugars":1, "Saturated_fatty_acids":1, "Salt": 1, 
+        #     "Proteins":2, "Fiber": 2, "Fruit_vegetable":2}
     weights_sum = sum(weights.values())
 
-    thresholds = generate_thresholds(df)
+    thresholds = generate_thresholds(df, columns)
 
     criteria = list(thresholds.keys())
 
@@ -154,7 +155,8 @@ def PessimisticmajoritySorting(df, lmd, debug=False, weights=None):
     if not debug:
         return df
 
-def OptimisticmajoritySorting(df, lmd, debug=False, weights=None):
+def OptimisticmajoritySorting(df, lmd, columns = ['energy_100g', 'saturated-fat_100g', 'sugars_100g', 'fiber_100g',
+            'proteins_100g', 'salt_100g', 'fruits-vegetables-nuts_100g'], debug=False, weights=None):
     """
     lmd - proportion of weights that a datapoint should be pass to go over the border
     """
@@ -168,7 +170,7 @@ def OptimisticmajoritySorting(df, lmd, debug=False, weights=None):
             "proteins_100g":2, "fiber_100g": 2, "fruits-vegetables-nuts_100g":2}
     weights_sum = sum(weights.values())
 
-    thresholds = generate_thresholds(df)
+    thresholds = generate_thresholds(df, columns)
     # threshodls are from the best to the worst
     # so we need to reverse the order first
     thresholds_rev = {key: value[::-1] for key, value in thresholds.items()}
